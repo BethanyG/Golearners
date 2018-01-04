@@ -40,10 +40,7 @@ func TestMergeSort(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := sort.MergeSort(tc.list)
-			if err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
+			got := sort.MergeSort(tc.list)
 
 			if isSorted(got) == false {
 				t.Errorf("slice not in numeric order: %v", got)

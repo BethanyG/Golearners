@@ -3,13 +3,13 @@ package sort
 
 // MergeSort implements a basic merge sort. It takes a slice of integers
 // and returns a new slice sorted in numeric order.
-func MergeSort(list []int) ([]int, error) {
+func MergeSort(list []int) []int {
 
 	var res []int
 
 	// Nil, empty, or short lists can be returned as is.
 	if list == nil || len(list) <= 1 {
-		return list, nil
+		return list
 	}
 
 	// If we have a list of two items return them in numeric order.
@@ -18,18 +18,18 @@ func MergeSort(list []int) ([]int, error) {
 			list[0], list[1] = list[1], list[0]
 		}
 
-		return list, nil
+		return list
 	}
 
 	// If our list contains more than two items split the lists.
 	pp := len(list) / 2
 
 	// Sort the two new lists and merge the results.
-	a, _ := MergeSort(list[:pp])
-	b, _ := MergeSort(list[pp:])
+	a := MergeSort(list[:pp])
+	b := MergeSort(list[pp:])
 	res = merge(a, b)
 
-	return res, nil
+	return res
 }
 
 // Merge is a helper function that merges two lists in increasing numerical order.
