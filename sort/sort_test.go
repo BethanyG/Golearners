@@ -1,6 +1,8 @@
 package sort_test
 
 import (
+	"fmt"
+	"math/rand"
 	"testing"
 
 	"github.com/bethanyg/golearners/sort"
@@ -36,6 +38,10 @@ func TestMergeSort(t *testing.T) {
 			"random initial list",
 			[]int{4, 6, 0, 8, 2, 9, 1, 5, 3, 7},
 		},
+		{
+			"random slice of 256 digits",
+			rand.Perm(256),
+		},
 	}
 
 	for _, tc := range testCases {
@@ -48,6 +54,18 @@ func TestMergeSort(t *testing.T) {
 		})
 	}
 
+}
+
+func BenchmarkMergeSort(b *testing.B) {
+	benchmarks := []int{10, 100, 1000, 10000, 100000, 1000000}
+
+	for _, bm := range benchmarks {
+		b.Run(fmt.Sprintf("Benchmark %d", bm), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				sort.MergeSort(rand.Perm(bm))
+			}
+		})
+	}
 }
 
 // IsSorted returns true if all integers in a slice are sorted in increasing numeric order.
