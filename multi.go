@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"runtime/trace"
 	"sync"
@@ -28,9 +27,7 @@ func MergeSortMulti(lists [][]int) [][]int {
 	for idx := range lists {
 		wg.Add(1)
 		go func(li int) {
-			fmt.Println("start: ", li)
 			res[li] = sort.MergeSort(lists[li])
-			fmt.Println("end: ", li)
 			wg.Done()
 		}(idx)
 	}
