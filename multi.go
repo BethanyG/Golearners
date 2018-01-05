@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"runtime/trace"
-	"sync"
 
 	"github.com/bethanyg/golearners/sort"
 )
 
+// Data is an arbitrary set of lists that we can use to test our multi-sort
+// approaches.
 var data = [][]int{
 	[]int{77, 26, 84, 39, 9, 52, 64, 41, 18, 86, 3, 12, 21, 41, 66, 63, 78, 67, 13, 73, 81, 55, 70, 0, 62, 74, 51, 8, 60, 17, 40, 96, 74, 64, 81, 38, 7, 22, 51, 10, 17, 31, 54, 46, 10},
 	[]int{42, 99, 34, 48, 34, 76, 87, 76, 36, 16, 59, 67, 69, 14, 77, 36, 37, 36, 71, 64, 88, 53, 31, 55, 0, 20, 6, 27, 2, 54, 78, 40, 76, 85, 50, 15, 88, 29, 67, 22, 62},
@@ -18,24 +18,37 @@ var data = [][]int{
 	[]int{49, 69, 76, 15, 20, 79},
 }
 
+// Packet is a type that holds both an index and a list. It can be used both
+// to submit lists for sorting and for returning the sorted list.
+type packet struct {
+	num  int
+	list []int
+}
+
 // MergeSortMulti takes a slice of lists and sorts each list within the slice.
 func MergeSortMulti(lists [][]int) [][]int {
 
-	res := make([][]int, len(lists))
+	resChan := make(chan packet, len(lists))
 
-	wg := sync.WaitGroup{}
-
+	// Loop over the lists and create a go-routine to sort each of them. Each go-routine
+	// writes the sorted list back to a channel.
 	for idx := range lists {
-		wg.Add(1)
-		go func(li int) {
-			fmt.Println("start: ", li)
-			res[li] = sort.MergeSort(lists[li])
-			fmt.Println("end: ", li)
-			wg.Done()
-		}(idx)
+		go func(li int, rc chan packet) {
+			sorted := sort.MergeSort(lists[li])
+			rc <- packet{num: li, list: sorted}
+		}(idx, resChan)
 	}
 
-	wg.Wait()
+	// We know how many results we need to read from the results channel. Once we have
+	// all the results we can close the channel.
+	res := make([][]int, len(lists))
+	for idx := 0; idx < len(lists); idx++ {
+		p := <-resChan
+		res[p.num] = p.list
+	}
+	close(resChan)
+
+	// We can now return our sorted results.
 	return res
 }
 
