@@ -1,8 +1,7 @@
-package main
+package sort_test
 
 import (
-	"os"
-	"runtime/trace"
+	"testing"
 
 	"github.com/bethanyg/golearners/sort"
 )
@@ -16,21 +15,14 @@ var data = [][]int{
 	[]int{49, 69, 76, 15, 20, 79},
 }
 
-func main() {
+func TestMergeSortMulti(t *testing.T) {
 
-	// start tracing
-	f, err := os.Create("trace.out")
-	if err != nil {
-		panic(err)
+	sorted := sort.MergeSortMulti(data)
+
+	for l := range sorted {
+		if isSorted(sorted[l]) == false {
+			t.Errorf("slice not in numeric order: %v", sorted[l])
+		}
 	}
-	defer f.Close()
 
-	err = trace.Start(f)
-	if err != nil {
-		panic(err)
-	}
-	defer trace.Stop()
-
-	// sort all the things
-	sort.MergeSortMulti(data)
 }
