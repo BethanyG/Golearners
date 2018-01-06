@@ -1,14 +1,11 @@
-package main
+package sort_test
 
 import (
-	"os"
-	"runtime/trace"
+	"testing"
 
 	"github.com/bethanyg/golearners/sort"
 )
 
-// Data is an arbitrary set of lists that we can use to test our multi-sort
-// approaches.
 var data = [][]int{
 	[]int{77, 26, 84, 39, 9, 52, 64, 41, 18, 86, 3, 12, 21, 41, 66, 63, 78, 67, 13, 73, 81, 55, 70, 0, 62, 74, 51, 8, 60, 17, 40, 96, 74, 64, 81, 38, 7, 22, 51, 10, 17, 31, 54, 46, 10},
 	[]int{42, 99, 34, 48, 34, 76, 87, 76, 36, 16, 59, 67, 69, 14, 77, 36, 37, 36, 71, 64, 88, 53, 31, 55, 0, 20, 6, 27, 2, 54, 78, 40, 76, 85, 50, 15, 88, 29, 67, 22, 62},
@@ -18,21 +15,14 @@ var data = [][]int{
 	[]int{49, 69, 76, 15, 20, 79},
 }
 
-func main() {
+func TestMergeSortMulti(t *testing.T) {
 
-	// start tracing
-	f, err := os.Create("trace.out")
-	if err != nil {
-		panic(err)
+	sorted := sort.MergeSortMulti(data)
+
+	for l := range sorted {
+		if isSorted(sorted[l]) == false {
+			t.Errorf("slice not in numeric order: %v", sorted[l])
+		}
 	}
-	defer f.Close()
 
-	err = trace.Start(f)
-	if err != nil {
-		panic(err)
-	}
-	defer trace.Stop()
-
-	// sort all the things
-	sort.MergeSortMulti(data)
 }
